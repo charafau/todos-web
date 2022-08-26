@@ -1,5 +1,7 @@
-use actix_web::{Result, get, post, web};
+use actix_web::{Result, get, post, web, HttpResponse, Error};
 use crate::models::todo::Todo;
+use crate::db::DbPool;
+use crate::repositories::*;
 
 pub fn todo_controller_config(cfg: &mut web::ServiceConfig){
     cfg.service(get_todos);
@@ -7,9 +9,19 @@ pub fn todo_controller_config(cfg: &mut web::ServiceConfig){
 }
 
 #[get("/todos")]
-async fn get_todos() -> Result<String> {
-    let todo = Todo {id: None, title: String::from("one")};
-    Ok(serde_json::to_string(&todo)?)
+async fn get_todos(pool: web::Data<DbPool>) -> Result<HttpResponse, Error> {
+
+    let conn = pool.get().expect("couldn't get db connection from pool");
+    let all_todos = todo_repository::fetch_todos(&conn).map_err(actix_web::error::ErrorInternalServerError)?;
+
+
+    if let Some(all_todos) = all_todos {
+        Ok(HttpResponse::Ok().json(all_todos))
+    } else {
+        let empty: Vec<Todo> = vec![];
+        Ok(HttpResponse::Ok().json(empty))
+    }
+   
 }
 
 #[post("/todos")]
