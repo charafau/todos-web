@@ -1,4 +1,4 @@
-use actix_web::{Responder, Result, HttpResponse, get, post, web::{self, Data}, App, HttpServer};
+use actix_web::{Responder, HttpResponse, get, web::{self, Data}, App, HttpServer};
 use controllers::todo_controller::todo_controller_config;
 extern crate dotenv;
 
