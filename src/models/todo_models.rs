@@ -11,3 +11,8 @@ pub struct Todo {
     pub title: String,
     pub is_done: bool,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NewTodo {
+    pub title: String,
+}
